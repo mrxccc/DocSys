@@ -9,7 +9,7 @@
     <link rel="shortcut icon"  href="static/SmartWiki/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=0">
 
-    <title>仓库详情-MxsDoc</title>
+    <title>仓库详情-TcDoc</title>
     <!-- BootStarp CSS -->
     <link href="static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <!-- bootStrapQ -->
@@ -110,6 +110,15 @@
         .ztree li .caret {
             margin-top: 8px !important;
         }
+		.btn{
+			font-size: 12px !important;
+		}
+		.btn-lg {
+			padding: 10px 16px;
+			font-size: 18px;
+			line-height: 1.33;
+			border-radius: 6px;
+		}
     </style>
 
     <style>
@@ -215,10 +224,10 @@
     <header class="navbar navbar-static-top  smart-nav navbar-fixed-top" role="banner" style="z-index:300">
         <div class="container-fluid">
             <div class="navbar-header">
-  				<a class="navbar-brand" style="font-weight: 600;" href="/DocSystem/web/projects.html"><i class="fa fa-paper-plane"></i> MxsDoc</a>
+  				<a class="navbar-brand" id="navbar-brand" style="font-weight: 600;" href="/DocSystem/web/projects.html"><i class="fa fa-paper-plane"></i> TcDoc</a>
                 <a  id="projectName" class="navbar-brand" style="font-weight: 600; width: 50vw; white-space:nowrap; text-overflow: ellipsis; overflow: hidden;" href="">仓库名</a>
                             
-	            <div class="btn-group dropdown-menu-right pull-right slidebar visible-xs-inline-block" style="right:12px; top:12px;">
+	            <!--<div class="btn-group dropdown-menu-right pull-right slidebar visible-xs-inline-block" style="right:12px; top:12px;">
 	                <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" style="width:26px; height:26px; border-radius:13px;">
 	                	<i class="icons plus" style="margin-left:-9px;margin-top:-3px;"></i>
 	                </button>
@@ -236,7 +245,7 @@
 							<a onclick="uploadDirEx()">上传文件夹</a>
 						</li>
 	                </ul>
-	            </div>  
+	            </div> -->
             </div>
 
             <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
@@ -274,7 +283,7 @@
 						<ul class="dropdown-menu" role="menu">
 							<li><a onclick="newDocEx(1)">新建文件</a></li>
 							<li><a onclick="newDocEx(2)">新建文件夹</a></li>
-							
+
 							<li><a onclick="uploadFilesEx();">上传文件</a></li>
 							<li><a onclick="uploadDirEx()">上传文件夹</a></li>
 						</ul>
@@ -296,10 +305,10 @@
         <div id="line" class="manual-line" ></div>
         <div class="second-table disallowcopy"  id="secondDropZone">
          	<div class="searchBox">
-         		<div class="back" onclick="backToParentDoc();"> 
-         			<i class="backicon glyphicon glyphicon-arrow-left"></i>
+         		<div class="back" onclick="backToParentDoc();">
+         			<i class="backicon glyphicon glyphicon-arrow-left"> 返回</i>
          		</div>
-         		<div class="content">
+         		<div class="content" style="margin-left: 150px">
          			<i class="glyphicon glyphicon-search icon" onclick="searchDoc();"></i>
          			<input placeholder="搜索..." type="text" id="searchWord"/>
          			<span class="caret  pull-right  dropdown-toggle" data-toggle="dropdown" aria-expanded="false" style="margin-right:-9px;margin-top:-15px;"></span>
@@ -322,19 +331,23 @@
  		                </ul>
          		</div>
          	</div>
-         	<div id="secondListBody" class="second-list" style="padding-bottom: 120px;">
+         	<div id="secondListBody" class="second-list" style="height: 75%">
          		<ul id="secondList">
          		</ul>
          	</div>
+			<div style="margin-bottom: 10px;">
+				<button id="second-table-back" class="btn btn-lg btn-warning examine_ban" type="button" onclick="backToParentDoc()" style="margin-bottom: 10px;margin-left: 50px">返回</button>
+				<button id="second-table-download" class="btn btn-lg btn-success" type="button" onclick="second_table_download()" style="margin-bottom: 10px;margin-right: 50px;float: right">下载</button>
+			</div>
          </div>
         <div id="second-line" class="second-line" ></div>
         
         <div class="manual-right">
             <div class="searchBox" style="white-space:nowrap">
-         		<div class="back" onclick="backToParentDocEx();"> 
-         			<i class="backicon glyphicon glyphicon-arrow-left"></i>
+         		<div class="back" onclick="backToParentDocEx();">
+         			<i class="backicon glyphicon glyphicon-arrow-left"> 返回</i>
          		</div>
-        		<div class="filetitle nowrap ellipsis" id="filetitle"></div>
+        		<div style="margin-left: 80px" class="filetitle nowrap ellipsis" id="filetitle"></div>
         		<div style="position:absolute; right:5px; top:10px">
 	                    <button id="btnExitEdit" class="btn btn-default" type="button" onclick="DocEdit.exitEdit()" style="display:none">退出编辑
 	                   	</button>
@@ -792,6 +805,22 @@
 					type : 'success',
 					time : 1000,
 		});
+	}
+
+	function second_table_download(){
+		var secondList = document.getElementById("secondList");
+		console.log(secondList.childNodes)
+		var dataIds = []
+		for (const e of secondList.childNodes) {
+			dataIds.push(e.getAttribute("dataid"))
+		}
+		var treeNodes = $.fn.zTree.getZTreeObj("doctree").getNodesByFilter((node) => {
+			for (const dataId of dataIds) {
+				if (node.docId == dataId) return true
+			}
+			return false
+		});
+		downloadDoc(treeNodes, true, 1);
 	}
 	
 	//文件下载接口 
@@ -1705,7 +1734,7 @@
 		if(gDocInfo.type == 1)
 		{
 	    	//open doc in dialog
-	    	openDoc(gDocInfo, true, "openInArtDialog", "office", gShareId);
+	    	openDoc(gDocInfo, true, "openInBootstrapQDialog", "office", gShareId);
 		}
 		else
 		{
@@ -2594,7 +2623,7 @@
 	function zTreeInit(data) {
 	    console.log("zTreeInit");
 	    //console.log(setting);
-	
+		console.log(data);
 	    var doctree = zTree.init($("#doctree"), setting, data);
 	    //doctree.expandAll(true); //考虑只自动展开根目录下目录
 	}
@@ -3223,7 +3252,7 @@
  		var xOffset = 0;
  		if(gIsPC == false)
  		{
- 			xOffset = -150;	
+ 			xOffset = -150;
  		}
  		context.show('#secondList',event,xOffset);
  	}
@@ -3834,6 +3863,9 @@
 		{
 			//系统初始化
 			SysInit();
+		}
+		if (!gIsPC){
+			$("#navbar-brand").attr("href",'javascript:;');
 		}
     });
     
@@ -4685,7 +4717,7 @@
 			context.attach('#secondList', [
 				{text: '预览', action: function(e){
 						e.preventDefault();
-						openDoc(curRightClickedDocListNode, true, "openInArtDialog", "pdf", gShareId);  
+						openDoc(curRightClickedDocListNode, true, "openInArtDialog", "pdf", gShareId);
 					}
 				},
 				{text: '打开', action: function(e){

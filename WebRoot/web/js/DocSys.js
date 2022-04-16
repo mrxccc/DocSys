@@ -1944,7 +1944,7 @@ function getArtDialogInitHeight()
 	}
 	else
 	{
-		return window.screen.height*0.9;
+		return window.screen.height*0.7;
 	}	
 }
 
